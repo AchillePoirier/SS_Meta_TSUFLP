@@ -1,5 +1,5 @@
 
-function objective_value_1(I,J,K,C,B,H,S,X,Y,Z)
+function objective_value_1(I,J,K,C,B,S,X,Y,Z)
 
     res_x = 0
     for i = 1:I
@@ -10,8 +10,8 @@ function objective_value_1(I,J,K,C,B,H,S,X,Y,Z)
 
     res_y = 0
     for j = 1:J
-        for j = 1:K
-            res_y += Y[j][k]*(B[j][k]+H[j])
+        for k = 1:K
+            res_y += Y[j][k]*(B[j][k])
         end
     end
 
@@ -25,7 +25,7 @@ function objective_value_1(I,J,K,C,B,H,S,X,Y,Z)
  
 end
 
-function objective_value_2(I,J,K,C,B,H,S,X,Y,Z)
+function objective_value_2(I,J,K,C,B,S,X,Y,Z)
 
     moy_x = 0
     for i = 1:I
@@ -140,7 +140,8 @@ function affectation_terminaux_obj2(I,J,C,Y)
 end
 
 
-
+#Exemple 
+#
 # Y = [
 #     [0,1],
 #     [0,0],
