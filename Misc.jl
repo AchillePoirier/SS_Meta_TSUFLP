@@ -61,22 +61,100 @@ function objective_value_2(I,J,K,C,B,H,S,X,Y,Z)
  
 end
 
-function affectation_terminaux_obj1(I,J,Z1)
+function affectation_terminaux_obj1(I,J,C,Y)
+    #Vecteur d'ouverture des concentrateurs_nv1
+    Y_opened = zeros(Int,J)
+    for j = 1:J
+        Y_opened[j] = sum(Y[j])
+    end
 
+    #Initialisation de X
     X = Vector{Vector{Int}}(undef,I)
     for i = 1:I
         X[i] = zeros(Int,J)
     end
 
-    
+    #Affectation terminaux/concentrateur_nv1 de plus faible cout
+    for i = 1:I
+        argmin = 0
+        min = 9999999999999
+        for j = 1:J
+            if Y_opened[j] == 1
+                if C[i][j] < min
+                    argmin = j
+                    min = C[i][j]
+                end
+            end
+        end
+        X[i][argmin] = 1
+    end
 
     return X
 end
 
-function affectation_terminaux_obj2(I,J,Z1)
+function affectation_terminaux_obj2(I,J,C,Y)
+
+        #Vecteur d'ouverture des concentrateurs_nv1
+        Y_opened = zeros(Int,J)
+        for j = 1:J
+            Y_opened[j] = sum(Y[j])
+        end
+    
+        #Initialisation de X
+        X = Vector{Vector{Int}}(undef,I)
+        for i = 1:I
+            X[i] = zeros(Int,J)
+        end
+
+        #calcul de la distance moyenne entre les terminaux et les concentrateurs_nv1 ouverts
+        moyennes = zeros(I)
+        for i = 1:I
+            for j = 1:J
+                if Y_opened[j] == 1
+                    moyennes[i] += C[i][j]
+                end
+            end
+            moyennes[i] = moyennes[i]/J
+        end
+
+        distance_moyenne_total = sum(moyennes)/I
+            
+        #Affectation terminaux/concentrateur_nv1 de plus faible cout
+        for i = 1:I
+            min = 99999999999999
+            argmin = 0
+            for j = 1:J
+                if Y_opened[j] == 1
+                    distance = abs(C[i][j]-distance_moyenne_total)
+                    if distance < min
+                        argmin = j
+                        min = distance
+                    end
+                end
+            end
+            X[i][argmin] = 1
+        end
+    
+        return X
+
 end
 
-affectation_terminaux_obj1(4,3,[1,0,0])
+
+
+# Y = [
+#     [0,1],
+#     [0,0],
+#     [0,1]
+# ]
+
+# C = [
+#     [5,4,7],
+#     [9,7,6],
+#     [2,5,3],
+#     [5,4,8]
+# ]
+
+# X = affectation_terminaux_obj2(4,3,C,Y)
 
 
 
