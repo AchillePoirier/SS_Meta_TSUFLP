@@ -1,49 +1,59 @@
 include("GRASP.jl")
 include("PathRelinking.jl")
-#include("TabuSearch.jl")
+include("TabuSearch.jl")
 
 function main()
-    
-    I = 10 #client
-    J = 7 #site lvl 1
-    K = 5 #site lvl 2
+    println("---------------------------------------------------")
+    I = 5   
+    J = 4
+    K = 3
     C = [
-    [18, 4, 17, 16, 19, 17, 2],
-    [18, 4, 17, 19, 14, 18, 1],
-    [15, 17, 17, 18, 2, 17, 5],
-    [12, 17, 19, 13, 19, 12, 11],
-    [6, 9, 16, 3, 15, 9, 5],
-    [18, 5, 5, 10, 19, 6, 8],
-    [2, 13, 20, 20, 19, 14, 19],
-    [7, 17, 14, 18, 3, 11, 9],
-    [2, 5, 5, 15, 10, 5, 12],
-    [18, 14, 1, 13, 3, 11, 5]
+    [3, 10, 3, 9],
+    [11, 2, 17, 3],
+    [17, 12, 2, 1],
+    [14, 3, 13, 8],
+    [7, 11, 12, 15]
     ]
-    
     B = [
-    [17, 15, 10, 2, 1],
-    [13, 10, 10, 9, 19],
-    [11, 10, 10, 15, 8],
-    [20, 10, 16, 16, 6],
-    [4, 15, 2, 18, 1],
-    [1, 3, 17, 5, 19],
-    [1, 14, 9, 8, 4]
+    [77, 97, 48],
+    [39, 39, 77],
+    [92, 76, 97],
+    [65, 42, 94]
     ]
+    S = [456, 490, 504]
 
-    H = [68, 58, 96, 75, 78, 63, 81]
-
-    S = [55, 86, 96, 48, 72]
+    Z = [1,0,1]
+    Y = [
+    [0,0,0],
+    [0,1,0],
+    [0,1,0],
+    [0,0,0]
+    ]
+    X = affectation_terminaux_obj1(5,4,C,Y)
     
+    #parametres
+    alpha = 0.7
+    beta = 6
+    tenure = 10
+    tolerance = 3 #k
+    p = 10
 
     #println(RCL_init_Si(K,S1,0.7))
     #println(RCL_init_Bi(3,J,B1,0.7))
 
-    P = 5
+    # P = 5
 
-    pop = population_generation(J,K,B,S,P,2,0.7)
-    for p = 1:P
-        println(pop[p])
-    end
+    # pop = population_generation(J,K,B,S,P,2,0.7)
+    # for p = 1:P
+    #     println(pop[p])
+    # end
+
+    tabu(I,J,K,C,B,S,X,Y,Z,tenure,tolerance,2)
+    println("Solution finale : ")
+    println("Z = ",Z)
+    println("Y = ",Y)
+    println("X = ",X)
+
     
 end
 

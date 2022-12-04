@@ -55,9 +55,11 @@ function objective_value_2(I,J,K,C,B,S,X,Y,Z)
     res_y = 0
     for j = 1:J
         for k = 1:K
-            res_y += Y[j][k]* abs(B[i][j]-moy_y)
+            res_y += Y[j][k]* abs(B[j][k]-moy_y)
         end
     end
+
+    return res_x + res_y
  
 end
 
@@ -99,6 +101,7 @@ function affectation_terminaux_obj2(I,J,C,Y)
         for j = 1:J
             Y_opened[j] = sum(Y[j])
         end
+        nb_Y_opened = sum(Y_opened)
     
         #Initialisation de X
         X = Vector{Vector{Int}}(undef,I)
@@ -114,8 +117,9 @@ function affectation_terminaux_obj2(I,J,C,Y)
                     moyennes[i] += C[i][j]
                 end
             end
-            moyennes[i] = moyennes[i]/J
+            moyennes[i] = moyennes[i]/nb_Y_opened
         end
+        #println(moyennes)
 
         distance_moyenne_total = sum(moyennes)/I
             
@@ -136,6 +140,101 @@ function affectation_terminaux_obj2(I,J,C,Y)
         end
     
         return X
+
+end
+
+function reaffectation_concentrateurs_obj1(J,K,B,S,Y,Z)
+    #Vecteur d'ouverture des concentrateurs_nv1
+    Y_opened = zeros(Int,J)
+    for j = 1:J
+        Y_opened[j] = sum(Y[j])
+    end
+
+    #Initialisation de Y
+    Y_new = Vector{Vector{Int}}(undef,J)
+    for j = 1:J
+        Y_new[j] = zeros(Int,K)
+    end
+
+    #Affectation concentrateur_nv1/concentrateurs_nv2 de plus faible cout
+    for j = 1:J
+        if Y_opened[j] == 1
+            argmin = 0
+            min = 9999999999999
+            for k = 1:K
+                if Z[k] == 1
+                    if B[j][k] < min
+                        argmin = k
+                        min = B[j][k]
+                    end
+                end
+            end
+            Y_new[j][argmin] = 1
+        end
+    end
+    return Y_new
+end
+
+function reaffectation_concentrateurs_obj2(J,K,B,S,Y,Z)
+
+    #Vecteur d'ouverture des concentrateurs_nv1
+    Y_opened = zeros(Int,J)
+    for j = 1:J
+        Y_opened[j] = sum(Y[j])
+    end
+    nb_Y_opened = sum(Y_opened)
+    nb_Z_opened = sum(Z)
+
+    #Initialisation de Y
+    Y_new = Vector{Vector{Int}}(undef,J)
+    for j = 1:J
+        Y_new[j] = zeros(Int,K)
+    end
+
+    #calcul de la distance moyenne entre les terminaux et les concentrateurs_nv1 ouverts
+    moyennes = zeros(J)
+    for j = 1:J
+        if Y_opened[j] == 1
+            for k = 1:K
+                if Z[k] == 1
+                    moyennes[j] += B[j][k]
+                end
+            end
+            moyennes[j] = moyennes[j]/nb_Z_opened
+        end
+    end
+    #println(moyennes)
+
+    distance_moyenne_total =  0 
+    for j = 1:J
+        if Y_opened[j]==1
+            distance_moyenne_total += moyennes[j]
+        end
+    end
+    distance_moyenne_total = distance_moyenne_total/nb_Y_opened
+
+    #println(distance_moyenne_total)
+
+        
+    #Affectation concentrateur_nv1/concentrateurs_nv2 de plus faible cout
+    for j = 1:J
+        if Y_opened[j] == 1
+            min = 99999999999999
+            argmin = 0
+            for k = 1:K
+                if Z[k] == 1
+                    distance = abs(B[j][k]-distance_moyenne_total)
+                    if distance < min
+                        argmin = k
+                        min = distance
+                    end
+                end
+            end
+            Y_new[j][argmin] = 1
+        end
+    end
+
+    return Y_new
 
 end
 

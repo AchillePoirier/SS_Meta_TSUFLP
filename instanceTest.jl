@@ -1,15 +1,28 @@
 #instance didactique
 
-I = 10 #client
-J = 7 #site lvl 1
-K = 5 #site lvl 2
+I = 5 #client
+J = 4 #site lvl 1
+K = 3 #site lvl 2
+
+inf_distance = 1
+sup_distance = 
+
+inf_instal_nv1 = 30
+sup_instal_nv1 = 100
+
+inf_instal_nv2 = 400
+sup_instal_nv2 = 600
 
 # C : cout d'affectation entre un client et un concentrateur de niveau 1
 # B : cout d'affectation d'un concentrateur de niveau 1 avec un cencentrateur de niveau 2
 # H : cout d'installation d'un concentrateur de niveau
 # S : cout d'installation d'un cencentrateur de niveau 1
 
-function generation_instance(I,J,K)
+function generation_instance(I,J,K,inf_distance,sup_distance,inf_instal_nv1,sup_instal_nv1,inf_instal_nv2,sup_instal_nv2)
+
+    println("I = ",I)
+    println("J = ",J)
+    println("K = ",K)
 
     println("C = [")
 
@@ -17,9 +30,9 @@ function generation_instance(I,J,K)
         print("[")
         for j = 1:J
             if j == J
-                print(rand(1:20))
+                print(rand(inf_distance:sup_distance))
             else
-                print(rand(1:20),", ")
+                print(rand(inf_distance:sup_distance),", ")
             end
         end
         if i == I
@@ -37,9 +50,9 @@ function generation_instance(I,J,K)
         print("[")
         for k = 1:K
             if k == K
-                print(rand(1:20))
+                print(rand(inf_distance:sup_distance)+rand(inf_instal_nv1:sup_instal_nv1))
             else
-                print(rand(1:20),", ")
+                print(rand(inf_distance:sup_distance)+rand(inf_instal_nv1:sup_instal_nv1),", ")
             end
         end
         if j == J
@@ -50,25 +63,18 @@ function generation_instance(I,J,K)
     end
     println("]")
 
-    print("H = [")
-    for j = 1:J
-        if j == J
-            print(rand(40:100))
-        else
-            print(rand(40:100),", ")
-        end
-    end
-    print("]\n")
-
     print("S = [")
     for k = 1:K
         if k == K
-            print(rand(40:100))
+            print(rand(inf_instal_nv2:sup_instal_nv2))
         else
-            print(rand(40:100),", ")
+            print(rand(inf_instal_nv2:sup_instal_nv2),", ")
         end
     end
     print("]\n")
 
 
 end
+
+
+generation_instance(I,J,K,inf_distance,sup_distance,inf_instal_nv1,sup_instal_nv1,inf_instal_nv2,sup_instal_nv2)
