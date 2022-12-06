@@ -4,7 +4,7 @@ function refSet(pop,beta)
 
     pop_remain = deepcopy(pop)
 
-    refSet = Vector{Tuple{Tuple{Vector{Vector{Int}},Vector{Vector{Int}},Vector{Int}},Float64}}(undef,beta)
+    refSet = Vector{Tuple{Tuple{Vector{Vector{Int}},Vector{Vector{Int}},Vector{Int}},Float64}}(undef,0)
 
     half_beta = ceil(Int,beta/2)
 
@@ -19,52 +19,80 @@ function refSet(pop,beta)
                 inf = obj_value
             end
         end
-        #println("to add : ",to_add)
-        refSet[i] = deepcopy(pop[to_add])
+
+        push!(refSet,pop[to_add])
         deleteat!(pop_remain,to_add)
     end
 
-    println(pop_remain)
+    println("pop remain : ",pop_remain)
+    println("refset : ",refSet)
 
 
-    #calcul de la distance pour chaque solution
-    for sol_refSet in refSet
-        println("sol refset ",sol_refSet)
-        
-        ((X_refset,Y_refset,Z_refset),) = sol_refSet
+    for i = half_beta+1:beta
+        #indice de la solution a ajouter
+        to_add = 0
+        dist_to_refset_max = 0
 
-        #reformulation du vecteur d'affectation Y en vecteur d'ouverture (evite d'avoir a refaire la somme)
-        Y_refset_opened = zeros(Int,J)
-        for j = 1:J
-            Y_refset_opened[j] = sum(Y_refset[j])
-        end
+        #calcul de la distance pour chaque solution
+        for p = 1:length(pop_remain)
+            
+            ((X_pop,Y_pop,Z_pop),) = pop_remain[p]
 
-        
-
-        for sol_pop in pop_remain
-            dist = 0
-            ((X_pop,Y_pop,Z_pop),) = sol_pop
-
+            Y_pop_opened = zeros(Int,J)
             for j = 1:J
-                if Y_refset_opened[j] != sum(Y_pop[j])
-                    dist += 1
-                end
+                Y_pop_opened[j] = sum(Y_pop[j])
             end
-            
-            for k = 1:K 
-                if Z_refset[k] != Z_pop[k]
-                    dist += 1
+
+
+            dist_to_refset = 0
+
+            for sol_refset in refSet
+
+                dist = 0
+                
+                ((X_refset,Y_refset,Z_refset),) = sol_refset
+
+                Y_refset_opened = zeros(Int,J)
+                for j = 1:J
+                    Y_refset_opened[j] = sum(Y_refset[j])
                 end
+
+                for j = 1:J
+                    if Y_pop_opened[j] != Y_refset_opened[j]
+                        dist += 1
+                    end
+                end
+                
+                for k = 1:K 
+                    if Z_pop[k] != Z_refset[k]
+                        dist += 1
+                    end
+                end
+
+                if dist > dist_to_refset
+                    dist_to_refset = dist
+                end
+                #println("distance au refSet pour ",p," : ",dist)
             end
-            
+
+            #println("donc ",dist_to_refset)
+
+            if dist_to_refset > dist_to_refset_max
+                dist_to_refset_max = dist_to_refset
+                to_add = p
+            end
+
         end
+        #println("sol de p la plus distante : ",to_add)
+
+        push!(refSet,pop[to_add])
+        deleteat!(pop_remain,to_add)
     end
 
-    println(refSet)
     
 
-
-
+    println("pop remain : ",pop_remain)
+    println("refset : ",refSet)
 
 end
 
