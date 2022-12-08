@@ -30,6 +30,7 @@ function skiplist_init()
 end
 
 function skiplist_insertion(skl_head,X_sol,Y_sol,Z_sol,obj1_sol,obj2_sol)
+    dominated = false
     current = skl_head
     location_to_insert_next = Vector{skl_element}(undef,0)
     new_elem = skl_element(nothing,nothing,nothing,nothing,obj1_sol,obj2_sol,X_sol,Y_sol,Z_sol)
@@ -40,7 +41,8 @@ function skiplist_insertion(skl_head,X_sol,Y_sol,Z_sol,obj1_sol,obj2_sol)
         #Si il est domine, pas d'insertion
         if current.obj2 <= obj2_sol || (current.next.obj1 == obj1_sol && current.next.obj2 <= obj2_sol)
             #println("dominé")
-            return skl_head
+            dominated = true
+            return skl_head,dominated
         end
 
         #recherche de la place du nouvel element
@@ -132,7 +134,7 @@ function skiplist_insertion(skl_head,X_sol,Y_sol,Z_sol,obj1_sol,obj2_sol)
 
     end
 
-    return new_skl_head
+    return new_skl_head,dominated
 end
 
 function skiplist_solution_vector(skl)
@@ -200,15 +202,15 @@ end
 # X2 = affectation_terminaux_obj2(5,4,C,Y2)
 
 # println("------------------------------------------------------------------------")
-# skl = skiplist_init()
-# skl = skiplist_insertion(skl,nothing,nothing,nothing,3,15)
-# skl = skiplist_insertion(skl,nothing,nothing,nothing,12,3)
-# skl = skiplist_insertion(skl,nothing,nothing,nothing,6,9)
-# skl = skiplist_insertion(skl,nothing,nothing,nothing,8,6)
-# skl = skiplist_insertion(skl,nothing,nothing,nothing,1,18)
+# skl, = skiplist_init()
+# skl, = skiplist_insertion(skl,nothing,nothing,nothing,3,15)
+# skl, = skiplist_insertion(skl,nothing,nothing,nothing,12,3)
+# skl, = skiplist_insertion(skl,nothing,nothing,nothing,6,9)
+# skl, = skiplist_insertion(skl,nothing,nothing,nothing,8,6)
+# skl, = skiplist_insertion(skl,nothing,nothing,nothing,1,18)
 
 # skl_display(skl)
-# skl = skiplist_insertion(skl,nothing,nothing,nothing,6,8)
+# skl, = skiplist_insertion(skl,nothing,nothing,nothing,6,8)
 
 
 # skl_display(skl)
