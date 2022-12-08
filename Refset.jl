@@ -24,9 +24,8 @@ function refSet(pop,beta)
         deleteat!(pop_remain,to_add)
     end
 
-    println("pop remain : ",pop_remain)
-    println("refset : ",refSet)
-
+    # println("pop remain : ",pop_remain)
+    # println("refset : ",refSet)
 
     for i = half_beta+1:beta
         #indice de la solution a ajouter
@@ -89,111 +88,105 @@ function refSet(pop,beta)
         deleteat!(pop_remain,to_add)
     end
 
-    
-
-    println("pop remain : ",pop_remain)
-    println("refset : ",refSet)
+    # println("pop remain : ",pop_remain)
+    # println("refset : ",refSet)
+    return refset
 
 end
 
+# #Exemple
 
+# I = 5
+# J = 4
+# K = 3
 
+# B = [
+#     [14,13,18],
+#     [15,12,14],
+#     [10,16,15],
+#     [12,14,18]
+# ]
 
+# S = [26,33,30]
 
+# C = [
+#     [5,4,7,3],
+#     [9,7,6,4],
+#     [2,5,3,7],
+#     [5,4,8,6],
+#     [7,2,3,4]
+# ]
 
-#Exemple
+# Z1 = [0,1,1]
+# Y1 = [
+#     [0,0,0],
+#     [0,0,1],
+#     [0,1,0],
+#     [0,0,0]
+# ]
+# X1 = affectation_terminaux_obj1(5,4,C,Y1)
 
-I = 5
-J = 4
-K = 3
+# Z2 = [0,0,1]
+# Y2 = [
+#     [0,0,0],
+#     [0,0,1],
+#     [0,0,1],
+#     [0,0,1]
+# ]
+# X2 = affectation_terminaux_obj1(5,4,C,Y2)
 
-B = [
-    [14,13,18],
-    [15,12,14],
-    [10,16,15],
-    [12,14,18]
-]
+# Z3 = [1,0,1]
+# Y3 = [
+#     [1,0,0],
+#     [1,0,0],
+#     [0,0,1],
+#     [0,0,0]
+# ]
+# X3 = affectation_terminaux_obj1(5,4,C,Y3)
 
-S = [26,33,30]
+# Z4 = [0,1,1]
+# Y4 = [
+#     [0,0,1],
+#     [0,1,0],
+#     [0,0,0],
+#     [0,1,0]
+# ]
+# X4 = affectation_terminaux_obj1(5,4,C,Y4)
 
-C = [
-    [5,4,7,3],
-    [9,7,6,4],
-    [2,5,3,7],
-    [5,4,8,6],
-    [7,2,3,4]
-]
+# Z5 = [1,0,0]
+# Y5 = [
+#     [1,0,0],
+#     [1,0,0],
+#     [0,0,0],
+#     [1,0,0]
+# ]
+# X5 = affectation_terminaux_obj1(5,4,C,Y5)
 
-Z1 = [0,1,1]
-Y1 = [
-    [0,0,0],
-    [0,0,1],
-    [0,1,0],
-    [0,0,0]
-]
-X1 = affectation_terminaux_obj1(5,4,C,Y1)
+# Z6 = [1,0,0]
+# Y6 = [
+#     [1,0,0],
+#     [0,0,0],
+#     [0,0,0],
+#     [1,0,0]
+# ]
+# X6 = affectation_terminaux_obj1(5,4,C,Y6)
 
-Z2 = [0,0,1]
-Y2 = [
-    [0,0,0],
-    [0,0,1],
-    [0,0,1],
-    [0,0,1]
-]
-X2 = affectation_terminaux_obj1(5,4,C,Y2)
+# pop1 = [
+#     ((X1,Y1,Z1),objective_value_1(I,J,K,C,B,S,X1,Y1,Z1)),
+#     ((X2,Y2,Z2),objective_value_1(I,J,K,C,B,S,X2,Y2,Z2)),
+#     ((X3,Y3,Z3),objective_value_1(I,J,K,C,B,S,X3,Y3,Z3)),
+#     ((X4,Y4,Z4),objective_value_1(I,J,K,C,B,S,X4,Y4,Z4)),
+#     ((X5,Y5,Z5),objective_value_1(I,J,K,C,B,S,X5,Y5,Z5)),
+#     ((X6,Y6,Z6),objective_value_1(I,J,K,C,B,S,X6,Y6,Z6))
+#     ]
 
-Z3 = [1,0,1]
-Y3 = [
-    [1,0,0],
-    [1,0,0],
-    [0,0,1],
-    [0,0,0]
-]
-X3 = affectation_terminaux_obj1(5,4,C,Y3)
+# pop2 = [
+#     ((X1,Y1,Z1),objective_value_2(I,J,K,C,B,S,X1,Y1,Z1)),
+#     ((X2,Y2,Z2),objective_value_2(I,J,K,C,B,S,X2,Y2,Z2)),
+#     ((X3,Y3,Z3),objective_value_2(I,J,K,C,B,S,X3,Y3,Z3)),
+#     ((X4,Y4,Z4),objective_value_2(I,J,K,C,B,S,X4,Y4,Z4)),
+#     ((X5,Y5,Z5),objective_value_2(I,J,K,C,B,S,X5,Y5,Z5)),
+#     ((X6,Y6,Z6),objective_value_2(I,J,K,C,B,S,X6,Y6,Z6))
+#     ]
 
-Z4 = [0,1,1]
-Y4 = [
-    [0,0,1],
-    [0,1,0],
-    [0,0,0],
-    [0,1,0]
-]
-X4 = affectation_terminaux_obj1(5,4,C,Y4)
-
-Z5 = [1,0,0]
-Y5 = [
-    [1,0,0],
-    [1,0,0],
-    [0,0,0],
-    [1,0,0]
-]
-X5 = affectation_terminaux_obj1(5,4,C,Y5)
-
-Z6 = [1,0,0]
-Y6 = [
-    [1,0,0],
-    [0,0,0],
-    [0,0,0],
-    [1,0,0]
-]
-X6 = affectation_terminaux_obj1(5,4,C,Y6)
-
-pop1 = [
-    ((X1,Y1,Z1),objective_value_1(I,J,K,C,B,S,X1,Y1,Z1)),
-    ((X2,Y2,Z2),objective_value_1(I,J,K,C,B,S,X2,Y2,Z2)),
-    ((X3,Y3,Z3),objective_value_1(I,J,K,C,B,S,X3,Y3,Z3)),
-    ((X4,Y4,Z4),objective_value_1(I,J,K,C,B,S,X4,Y4,Z4)),
-    ((X5,Y5,Z5),objective_value_1(I,J,K,C,B,S,X5,Y5,Z5)),
-    ((X6,Y6,Z6),objective_value_1(I,J,K,C,B,S,X6,Y6,Z6))
-    ]
-
-pop2 = [
-    ((X1,Y1,Z1),objective_value_2(I,J,K,C,B,S,X1,Y1,Z1)),
-    ((X2,Y2,Z2),objective_value_2(I,J,K,C,B,S,X2,Y2,Z2)),
-    ((X3,Y3,Z3),objective_value_2(I,J,K,C,B,S,X3,Y3,Z3)),
-    ((X4,Y4,Z4),objective_value_2(I,J,K,C,B,S,X4,Y4,Z4)),
-    ((X5,Y5,Z5),objective_value_2(I,J,K,C,B,S,X5,Y5,Z5)),
-    ((X6,Y6,Z6),objective_value_2(I,J,K,C,B,S,X6,Y6,Z6))
-    ]
-
-refSet(pop1,4)
+# refSet(pop1,4)
