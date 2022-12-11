@@ -2,34 +2,42 @@ include("Misc.jl")
 
 function tabu(I,J,K,C,B,S,X,Y,Z,tenure,tolerance,objectif)
 
+    echo = false
+
     X_new = deepcopy(X)
     Y_new = deepcopy(Y)
     Z_new = deepcopy(Z)
 
-    println("-------------------------------------------------------------")
-    println("Solution initiale : ")
-    println("Z = ",Z_new)
-    println("Y = ",Y_new)
-    println("X = ",X_new)
-    if objectif == 1
-        println("obj = ",objective_value_1(I,J,K,C,B,S,X_new,Y_new,Z_new))
-    elseif objectif == 2
-        println("obj = ",objective_value_2(I,J,K,C,B,S,X_new,Y_new,Z_new))
+    if echo == true
+        println("-------------------------------------------------------------")
+        println("Solution initiale : ")
+        println("Z = ",Z_new)
+        println("Y = ",Y_new)
+        println("X = ",X_new)
+        if objectif == 1
+            println("obj = ",objective_value_1(I,J,K,C,B,S,X_new,Y_new,Z_new))
+        elseif objectif == 2
+            println("obj = ",objective_value_2(I,J,K,C,B,S,X_new,Y_new,Z_new))
+        end
     end
 
 
     #----Swap----------------------------------------
 
+    best_sol = Tuple{Tuple{Vector{Vector{Int}},Vector{Vector{Int}},Vector{Int}},Float64}
+
     if objectif == 1
-        best_sol = ((X_new,Y_new,Z_new),objective_value_1(I,J,K,C,B,S,X_new,Y_new,Z_new))
+        best_sol = ((deepcopy(X_new),deepcopy(Y_new),deepcopy(Z_new)),objective_value_1(I,J,K,C,B,S,X_new,Y_new,Z_new))
     elseif objectif == 2
         best_sol = ((X_new,Y_new,Z_new),objective_value_2(I,J,K,C,B,S,X_new,Y_new,Z_new))
     end
-
+    
     salve = 1
     
     while true
-        println("========================================salve ",salve,"==========================================================")
+        if echo == true
+            println("========================================salve ",salve,"==========================================================")
+        end
         global_improve = false
         # Swap Y
 
@@ -43,8 +51,18 @@ function tabu(I,J,K,C,B,S,X,Y,Z,tenure,tolerance,objectif)
         #condition d'arret : nombre de mouvement non ameliorant > tolerance
 
         while nb_non_improving_move_Y <= tolerance
-            println("-------------------iteration ",iteration_Y,"-------------------------")
+            if echo == true
+                println("-------------------iteration ",iteration_Y,"-------------------------")
+                println("Best sol :")
+                ((X_best,Y_best,Z_best),best_obj_value) = best_sol
+                println("Z = ",Z_best)
+                println("Y = ",Y_best)
+                println("X = ",X_best)
+                println("obj value stock : ",best_obj_value)
+                println("vrai obj value : ",objective_value_1(I,J,K,C,B,S,X_best,Y_best,Z_best))
+                verif_sol(I,J,K,X_new,Y_new,Z_new)
 
+            end
             #recherche du mouvement a appliquer dans le voisinnage swap
             ((),best_obj_value) = best_sol
             available_move,improve,to_close,to_open = swap_Y(I,J,K,C,B,S,X_new,Y_new,Z_new,tabu_list_Y,iteration_Y,best_obj_value,objectif)
@@ -65,6 +83,7 @@ function tabu(I,J,K,C,B,S,X,Y,Z,tenure,tolerance,objectif)
 
                 if improve==true
                     nb_non_improving_move_Y = 0
+                    new_obj_value = 9999999999
                     
                     if objectif == 1
                         new_obj_value = objective_value_1(I,J,K,C,B,S,X_new,Y_new,Z_new)
@@ -72,9 +91,9 @@ function tabu(I,J,K,C,B,S,X,Y,Z,tenure,tolerance,objectif)
                         new_obj_value = objective_value_2(I,J,K,C,B,S,X_new,Y_new,Z_new)
                     end
 
-                    ((X_best,Y_best,Z_best),best_obj_value) = best_sol
+                    ((),best_obj_value) = best_sol
                     if best_obj_value > new_obj_value
-                        best_sol = ((X_new,Y_new,Z_new),new_obj_value)
+                        best_sol = ((deepcopy(X_new),deepcopy(Y_new),deepcopy(Z_new)),new_obj_value)
                         global_improve = true
                     end
 
@@ -82,20 +101,24 @@ function tabu(I,J,K,C,B,S,X,Y,Z,tenure,tolerance,objectif)
                     nb_non_improving_move_Y += 1
                 end
 
-                
-                if objectif == 1
-                    println("obj = ",objective_value_1(I,J,K,C,B,S,X_new,Y_new,Z_new))
-                elseif objectif == 2
-                    println("obj = ",objective_value_2(I,J,K,C,B,S,X_new,Y_new,Z_new))
-                end
+                if echo == true
+                    if objectif == 1
+                        println("obj = ",objective_value_1(I,J,K,C,B,S,X_new,Y_new,Z_new))
+                    elseif objectif == 2
+                        println("obj = ",objective_value_2(I,J,K,C,B,S,X_new,Y_new,Z_new))
+                    end
 
-                println("Z = ",Z_new)
-                println("Y = ",Y_new)
-                println("X = ",X_new)
+                    println("Z = ",Z_new)
+                    println("Y = ",Y_new)
+                    println("X = ",X_new)
+                    verif_sol(I,J,K,X_new,Y_new,Z_new)
+                end
 
                 #Actualisation de la liste tabu
                 tabu_list_Y[to_open] = iteration_Y + tenure
-                println("tabu list : ",tabu_list_Y)
+                if echo == true
+                    println("tabu list : ",tabu_list_Y)
+                end
             else
                 nb_non_improving_move_Y += 1
             end
@@ -105,7 +128,19 @@ function tabu(I,J,K,C,B,S,X,Y,Z,tenure,tolerance,objectif)
 
         end
 
-        ((X_new,Y_new,Z_new),) = best_sol
+        ((X_new,Y_new,Z_new),) = deepcopy(best_sol)
+        if echo == true
+            println("passation")
+
+            println("Z = ",Z_new)
+            println("Y = ",Y_new)
+            println("X = ",X_new)
+            verif_sol(I,J,K,X_new,Y_new,Z_new)
+            
+        end
+
+
+
 
         
         #------------------------------------------------
@@ -119,12 +154,14 @@ function tabu(I,J,K,C,B,S,X,Y,Z,tenure,tolerance,objectif)
 
         #condition d'arret : nombre de mouvement non ameliorant > tolerance
         while nb_non_improving_move_Z <= tolerance
-            #((),best_obj_value) = best_sol
-            println("-------------------iteration ",iteration_Z,"-------------------------")
+            if echo == true
+                println("-------------------iteration ",iteration_Z,"-------------------------")
                 println("Z = ",Z_new)
                 println("Y = ",Y_new)
                 println("X = ",X_new)
                 println("best obj value : ",best_obj_value)
+                verif_sol(I,J,K,X_new,Y_new,Z_new)
+            end
                 
             #recherche du mouvement a appliquer dans le voisinnage swap
             available_move,improve,to_close,to_open = swap_Z(I,J,K,C,B,S,X_new,Y_new,Z_new,tabu_list_Z,iteration_Z,best_obj_value,objectif)
@@ -145,6 +182,7 @@ function tabu(I,J,K,C,B,S,X,Y,Z,tenure,tolerance,objectif)
                 if improve==true
 
                     nb_non_improving_move_Z = 0
+                    new_obj_value = 999999999999
 
                     if objectif == 1
                         new_obj_value = objective_value_1(I,J,K,C,B,S,X_new,Y_new,Z_new)
@@ -152,28 +190,33 @@ function tabu(I,J,K,C,B,S,X,Y,Z,tenure,tolerance,objectif)
                         new_obj_value = objective_value_2(I,J,K,C,B,S,X_new,Y_new,Z_new)
                     end
 
-                    ((X_best,Y_best,Z_best),best_obj_value) = best_sol
+                    ((),best_obj_value) = best_sol
                     if best_obj_value > new_obj_value
-                        best_sol = ((X_new,Y_new,Z_new),new_obj_value)
+                        best_sol = ((deepcopy(X_new),deepcopy(Y_new),deepcopy(Z_new)),new_obj_value)
                         global_improve = true
                     end
                 else
                     nb_non_improving_move_Z += 1
                 end
 
-                
-                if objectif == 1
-                    println("obj = ",objective_value_1(I,J,K,C,B,S,X_new,Y_new,Z_new))
-                elseif objectif == 2
-                    println("obj = ",objective_value_2(I,J,K,C,B,S,X_new,Y_new,Z_new))
+                if echo == true
+                    if objectif == 1
+                        println("obj = ",objective_value_1(I,J,K,C,B,S,X_new,Y_new,Z_new))
+                    elseif objectif == 2
+                        println("obj = ",objective_value_2(I,J,K,C,B,S,X_new,Y_new,Z_new))
+                    end
+                    println("Z = ",Z_new)
+                    println("Y = ",Y_new)
+                    println("X = ",X_new)
+                    verif_sol(I,J,K,X_new,Y_new,Z_new)
                 end
-                println("Z = ",Z_new)
-                println("Y = ",Y_new)
-                println("X = ",X_new)
+
 
                 #Actualisation de la liste tabu
                 tabu_list_Z[to_open] = iteration_Z + tenure
-                println("tabu list : ",tabu_list_Z)
+                if echo == true
+                    println("tabu list : ",tabu_list_Z)
+                end
             else
                 nb_non_improving_move_Z += 1
             end
@@ -185,7 +228,10 @@ function tabu(I,J,K,C,B,S,X,Y,Z,tenure,tolerance,objectif)
             break
         end
 
-        ((X_new,Y_new,Z_new),) = best_sol
+        ((X_best,Y_best,Z_best),) = deepcopy(best_sol)
+        X_new = deepcopy(X_best)
+        Y_new = deepcopy(Y_best)
+        Z_new = deepcopy(Z_best)
 
         salve += 1
 
@@ -193,47 +239,26 @@ function tabu(I,J,K,C,B,S,X,Y,Z,tenure,tolerance,objectif)
 
 
     ((X_best,Y_best,Z_best),best_obj_value) = best_sol
-    println(best_sol)
 
-    println("Solution finale : ")
-    println("obj = ",best_obj_value)
-    println("Z = ",Z_best)
-    println("Y = ",Y_best)
-    println("X = ",X_best)
+    if echo == true
+        println(best_sol)
 
-    #----Drop----------------------------------------
+        println("Solution finale : ")
+        println("obj = ",best_obj_value)
+        println("Z = ",Z_best)
+        println("Y = ",Y_best)
+        println("X = ",X_best)
+        verif_sol(I,J,K,X_best,Y_best,Z_best)
+    end
 
-#    Do While : tant qu'un drop_Y ou un Drop_Z est ameliorant, on continue a chercher dans le voisinnage Drop
-    # while true
-    #     has_improve = false
-    #     println("ici ",X)
-    #     #Voisinnage Drop_Y
-    #     improve = drop_Y(I,J,K,C,B,S,X,Y,Z)
-    #     if improve == true
-    #         has_improve = true
-    #     end
-    #     while improve == true
-    #         improve = drop_Y(I,J,K,C,B,S,X,Y,Z)
-    #     end
+    return deepcopy(best_sol)
 
-    #     #Voisinnage Drop_Z
-    #     improve = drop_Z(I,J,K,C,B,S,X,Y,Z)
-    #     if improve == true
-    #         has_improve = true
-    #     end
-    #     while improve == true
-    #         improve = drop_Z(I,J,K,C,B,S,X,Y,Z)
-    #     end
-
-    #     if has_improve == false
-    #         break
-    #     end
-
-    # end
 end
 
 
 function swap_Y(I,J,K,C,B,S,X,Y,Z,tabu_list,iteration,best_obj_value,objectif)
+
+    echo = false
 
     #Vecteur d'ouverture des concentrateurs_nv1
     Y_opened = zeros(Int,J)
@@ -272,6 +297,8 @@ function swap_Y(I,J,K,C,B,S,X,Y,Z,tabu_list,iteration,best_obj_value,objectif)
     #indique si le voisinnage trouve est ameliorant
     improve = false
 
+
+    obj_value = 99999999999999
 
     if objectif == 1
         obj_value = objective_value_1(I,J,K,C,B,S,X,Y,Z)
@@ -351,20 +378,28 @@ function swap_Y(I,J,K,C,B,S,X,Y,Z,tabu_list,iteration,best_obj_value,objectif)
     end
 
     if improve==true
-        println("Improving swap : closing ",to_close," and opening ",to_open)
+        if echo == true
+            println("Improving swap : closing ",to_close," and opening ",to_open)
+        end
         return available_move,improve,to_close,to_open
     elseif available_move == true
         ((to_close,to_open),non_improving_obj) = best_non_improving_sol
-        println("Best non improving swap : closing ",to_close," and opening ",to_open)
+        if echo == true
+            println("Best non improving swap : closing ",to_close," and opening ",to_open)
+        end
         return available_move,improve,to_close,to_open
     else
-        println("No available move")
+        if echo == true
+            println("No available move")
+        end
         return available_move,improve,to_close,to_open
     end
         
 end
 
 function swap_Z(I,J,K,C,B,S,X,Y,Z,tabu_list,iteration,best_obj_value,objectif)
+
+    echo = false
 
     #Vecteur d'ouverture des concentrateurs_nv1
     Y_opened = zeros(Int,J)
@@ -476,14 +511,20 @@ function swap_Z(I,J,K,C,B,S,X,Y,Z,tabu_list,iteration,best_obj_value,objectif)
     end
 
     if improve==true
-        println("Improving swap : closing ",to_close," and opening ",to_open)
+        if echo == true
+            println("Improving swap : closing ",to_close," and opening ",to_open)
+        end
         return available_move,improve,to_close,to_open
     elseif available_move == true
         ((to_close,to_open),non_improving_obj) = best_non_improving_sol
-        println("Best non improving swap : closing ",to_close," and opening ",to_open)
+        if echo == true
+            println("Best non improving swap : closing ",to_close," and opening ",to_open)
+        end
         return available_move,improve,to_close,to_open
     else
-        println("No available move")
+        if echo == true
+            println("No available move")
+        end
         return available_move,improve,to_close,to_open
     end
         
@@ -518,113 +559,11 @@ end
 # ]
 # X = affectation_terminaux_obj1(5,4,C,Y)
 
-
-
-#affectation_terminaux_obj2(5,4,C,Y)
-#affectation_concentrateurs_obj2(4,3,B,S,Y,Z)
 # println("--------------------------------------------------------------")
-#tabu(5,4,3,C,B,S,X,Y,Z,10,3,2)
+# ((X,Y,Z),obj_value) = tabu(5,4,3,C,B,S,X,Y,Z,10,3,2)
 # println("Solution finale : ")
 # println("Z = ",Z)
 # println("Y = ",Y)
 # println("X = ",X)
 
 
-
-
-# function drop_Y(I,J,K,C,B,S,X,Y,Z)
-
-#     if (sum(sum(Y)) > 1)
-
-#         #Vecteur d'ouverture des concentrateurs_nv1
-#         Y_opened = zeros(Int,J)
-#         for j = 1:J
-#             Y_opened[j] = sum(Y[j])
-#         end
-
-#         j = 1
-#         improve = false
-
-#         obj_value = objective_value_1(I,J,K,C,B,S,X,Y,Z)
-#         println("obj value : ",obj_value)
-
-#         Y_new = deepcopy(Y)
-#         X_new = deepcopy(X)
-#         #recherche de voisin en first-improving strategy
-#         while j < J && improve == false
-#             if (Y_opened[j] == 1)
-#                 println("Drop Y at ",j)
-#                 Y_new_j = Y_new[j]
-#                 Y_new[j] = zeros(Int,K)
-#                 println("Y = ",Y_new)
-
-#                 X_new = affectation_terminaux_obj1(I,J,C,Y_new)
-#                 println("X = ",X_new)
-
-#                 new_obj_value = objective_value_1(I,J,K,C,B,S,X_new,Y_new,Z)
-#                 println("obj = ",new_obj_value)
-
-#                 if new_obj_value < obj_value
-#                     improve = true
-#                 end
-#                 Y_new[j] = Y_new_j
-
-#                 println("Improving : ",improve)
-#             end
-#             j += 1
-#         end
-#         move = j-1
-
-#         #Application du Drop
-#         Y[move] = zeros(Int,K)
-#         X = X_new
-
-#         return improve
-#     end
-# end
-
-# function drop_Z(I,J,K,C,B,S,X,Y,Z)
-
-#     if (sum(Z) > 1)
-
-#         k = 1
-#         improve = false
-
-#         obj_value = objective_value_1(I,J,K,C,B,S,X,Y,Z)
-#         println("obj value : ",obj_value)
-
-#         Z_new = deepcopy(Z)
-#         Y_new = deepcopy(Y)
-#         #recherche de voisin en first-improving strategy
-#         while k < K && improve == false
-#             if (Z[k] == 1)
-#                 println("Drop Z at ",k)
-#                 Z_new[k] = 0
-
-#                 println("Z = ",Z_new)
-
-#                 Y_new = reaffectation_concentrateurs_obj1(J,K,B,S,Y,Z_new)
-#                 println("Y = ",Y_new)
-
-#                 new_obj_value = objective_value_1(I,J,K,C,B,S,X,Y_new,Z_new)
-#                 println("obj = ",new_obj_value)
-
-#                 if new_obj_value < obj_value
-#                     improve = true
-#                 end
-#                 Z_new[k] = 1
-
-#                 println("Improving : ",improve)
-#             end
-#             k += 1
-#         end
-#         move = k-1
-
-#         #Application du Drop
-#         Z[move] = 0
-#         Y = Y_new
-#         println(" X Z = ",X)
-
-#         return improve
-#     end
-# end

@@ -1,8 +1,17 @@
 include("Misc.jl")
 
-function refSet(pop,beta)
+function refSet_init(I,J,K,C,B,S,pop,beta,objective)
 
-    pop_remain = deepcopy(pop)
+    pop_remain = Vector{Tuple{Tuple{Vector{Vector{Int}},Vector{Vector{Int}},Vector{Int}},Float64}}(undef,0)
+
+    for p in pop
+        ((X,Y,Z),) = deepcopy(p)
+        if objective == 1
+            push!(pop_remain,((X,Y,Z),objective_value_1(I,J,K,C,B,S,X,Y,Z)))
+        elseif objective == 2
+            push!(pop_remain,((X,Y,Z),objective_value_2(I,J,K,C,B,S,X,Y,Z)))
+        end
+    end
 
     refSet = Vector{Tuple{Tuple{Vector{Vector{Int}},Vector{Vector{Int}},Vector{Int}},Float64}}(undef,0)
 
@@ -14,18 +23,18 @@ function refSet(pop,beta)
         to_add = ()
         for p = 1:length(pop_remain)
             ((),obj_value) = pop_remain[p]
-            if obj_value <= inf
+            if obj_value < inf
                 to_add = p
                 inf = obj_value
             end
         end
 
-        push!(refSet,pop[to_add])
+        push!(refSet,pop_remain[to_add])
         deleteat!(pop_remain,to_add)
     end
 
-    # println("pop remain : ",pop_remain)
-    # println("refset : ",refSet)
+    #println("pop remain : ",pop_remain)
+    #println("refset : ",refSet)
 
     for i = half_beta+1:beta
         #indice de la solution a ajouter
@@ -82,15 +91,15 @@ function refSet(pop,beta)
             end
 
         end
-        #println("sol de p la plus distante : ",to_add)
+        #println("sol la plus distante : ",to_add)
 
-        push!(refSet,pop[to_add])
+        push!(refSet,pop_remain[to_add])
         deleteat!(pop_remain,to_add)
     end
 
     # println("pop remain : ",pop_remain)
     # println("refset : ",refSet)
-    return refset
+    return refSet
 
 end
 
@@ -189,4 +198,13 @@ end
 #     ((X6,Y6,Z6),objective_value_2(I,J,K,C,B,S,X6,Y6,Z6))
 #     ]
 
-# refSet(pop1,4)
+
+# pop = [
+#     (X1,Y1,Z1),
+#     (X2,Y2,Z2),
+#     (X3,Y3,Z3),
+#     (X4,Y4,Z4),
+#     (X5,Y5,Z5),
+#     (X6,Y6,Z6)
+#     ]
+# refSet_init(I,J,K,C,B,S,pop,4,1)

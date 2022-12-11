@@ -19,7 +19,7 @@ function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
     skl, = skiplist_insertion(skl,X1,Y1,Z1,objective_value_1(I,J,K,C,B,S,X1,Y1,Z1),objective_value_2(I,J,K,C,B,S,X1,Y1,Z1))
     skl, = skiplist_insertion(skl,X2,Y2,Z2,objective_value_1(I,J,K,C,B,S,X2,Y2,Z2),objective_value_2(I,J,K,C,B,S,X2,Y2,Z2))
 
-    skl_display(skl)
+    #skl_display(skl)
 
     Y_in = Vector{Int}(undef,0)
     Y_out = Vector{Int}(undef,0)
@@ -43,10 +43,10 @@ function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
         end
     end
 
-    println("Y1 ",Y1_opened," Z1 ",Z1)
-    println("Y2 ",Y2_opened," Z2 ",Z2)
-    println("Y_in ",Y_in," Y_out ",Y_out)
-    println("Z_in ",Z_in," Z_out ",Z_out)
+    # println("Y1 ",Y1_opened," Z1 ",Z1)
+    # println("Y2 ",Y2_opened," Z2 ",Z2)
+    # println("Y_in ",Y_in," Y_out ",Y_out)
+    # println("Z_in ",Z_in," Z_out ",Z_out)
 
     
     nb_move_left = length(Y_in) + length(Y_out) + length(Z_in) + length(Z_out)
@@ -67,23 +67,24 @@ function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
             Y2_opened[j] = sum(Y2[j])
         end
     
-        println("Y1 ",Y1_opened," Z1 ",current_Z)
-        println("Y2 ",Y2_opened," Z2 ",Z2)
-        println("Y_in ",Y_in," Y_out ",Y_out)
-        println("Z_in ",Z_in," Z_out ",Z_out)
+        # println("Y1 ",Y1_opened," Z1 ",current_Z)
+        # println("Y2 ",Y2_opened," Z2 ",Z2)
+        # println("Y_in ",Y_in," Y_out ",Y_out)
+        # println("Z_in ",Z_in," Z_out ",Z_out)
+        # println("nb move left : ",nb_move_left)
 
         move_found = false 
 
         #mouvement in sur y
         argmove = 1
-        while argmove <= length(Y_in) && move_found == false && sum(sum(current_Y)) > 1
+        while argmove <= length(Y_in) && move_found == false 
 
             new_X_obj1,new_Y_obj1,new_Z = move(I,J,K,C,B,S,current_X,current_Y,current_Z,'y',"in",Y_in[argmove],1)
 
             skl,dominated1 = skiplist_insertion(skl,new_X_obj1,new_Y_obj1,new_Z,objective_value_1(I,J,K,C,B,S,new_X_obj1,new_Y_obj1,new_Z),objective_value_2(I,J,K,C,B,S,new_X_obj1,new_Y_obj1,new_Z))
 
             if dominated1 == false
-                println("mouvement dominant : y_in-",Y_in[argmove])
+                #println("mouvement dominant : y_in-",Y_in[argmove])
                 current_X = new_X_obj1
                 current_Y = new_Y_obj1
                 current_Z = new_Z
@@ -97,7 +98,7 @@ function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
             skl,dominated2 = skiplist_insertion(skl,new_X_obj2,new_Y_obj2,new_Z,objective_value_1(I,J,K,C,B,S,new_X_obj2,new_Y_obj2,new_Z),objective_value_2(I,J,K,C,B,S,new_X_obj2,new_Y_obj2,new_Z))
             
             if dominated2 == false
-                println("mouvement dominant : y_in-",Y_in[argmove])
+                #println("mouvement dominant : y_in-",Y_in[argmove])
                 current_X = new_X_obj2
                 current_Y = new_Y_obj2
                 current_Z = new_Z
@@ -112,18 +113,19 @@ function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
         
         #mouvement out sur y
         argmove = 1
-        while argmove <= length(Y_in) && move_found == false
+        while argmove <= length(Y_out) && move_found == false && sum(sum(current_Y)) > 1
 
             new_X_obj1,new_Y_obj1,new_Z = move(I,J,K,C,B,S,current_X,current_Y,current_Z,'y',"out",Y_out[argmove],1)
 
             skl,dominated1 = skiplist_insertion(skl,new_X_obj1,new_Y_obj1,new_Z,objective_value_1(I,J,K,C,B,S,new_X_obj1,new_Y_obj1,new_Z),objective_value_2(I,J,K,C,B,S,new_X_obj1,new_Y_obj1,new_Z))
 
             if dominated1 == false
-                println("mouvement dominant : y_out-",Y_out[argmove])
+                #println("mouvement dominant : y_out-",Y_out[argmove])
                 current_X = new_X_obj1
                 current_Y = new_Y_obj1
                 current_Z = new_Z
                 move_found = true
+                deleteat!(Y_out,argmove)
                 break
             end
 
@@ -133,11 +135,12 @@ function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
             skl,dominated2 = skiplist_insertion(skl,new_X_obj2,new_Y_obj2,new_Z,objective_value_1(I,J,K,C,B,S,new_X_obj2,new_Y_obj2,new_Z),objective_value_2(I,J,K,C,B,S,new_X_obj2,new_Y_obj2,new_Z))
             
             if dominated2 == false
-                println("mouvement dominant : y_out-",Y_out[argmove])
+                #println("mouvement dominant : y_out-",Y_out[argmove])
                 current_X = new_X_obj2
                 current_Y = new_Y_obj2
                 current_Z = new_Z
                 move_found = true
+                deleteat!(Y_out,argmove)
                 break
             end
 
@@ -146,18 +149,19 @@ function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
         end
         #mouvement in sur Z
         argmove = 1
-        while argmove <= length(Y_in) && move_found == false
+        while argmove <= length(Z_in) && move_found == false
 
             new_X_obj1,new_Y_obj1,new_Z = move(I,J,K,C,B,S,current_X,current_Y,current_Z,'z',"in",Z_in[argmove],1)
 
             skl,dominated1 = skiplist_insertion(skl,new_X_obj1,new_Y_obj1,new_Z,objective_value_1(I,J,K,C,B,S,new_X_obj1,new_Y_obj1,new_Z),objective_value_2(I,J,K,C,B,S,new_X_obj1,new_Y_obj1,new_Z))
 
             if dominated1 == false
-                println("mouvement dominant : z_in-",Z_in[argmove])
+                #println("mouvement dominant : z_in-",Z_in[argmove])
                 current_X = new_X_obj1
                 current_Y = new_Y_obj1
                 current_Z = new_Z
                 move_found = true
+                deleteat!(Z_in,argmove)
                 break
             end
 
@@ -166,11 +170,12 @@ function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
             skl,dominated2 = skiplist_insertion(skl,new_X_obj2,new_Y_obj2,new_Z,objective_value_1(I,J,K,C,B,S,new_X_obj2,new_Y_obj2,new_Z),objective_value_2(I,J,K,C,B,S,new_X_obj2,new_Y_obj2,new_Z))
             
             if dominated2 == false
-                println("mouvement dominant : z_in-",Z_in[argmove])
+                #println("mouvement dominant : z_in-",Z_in[argmove])
                 current_X = new_X_obj2
                 current_Y = new_Y_obj2
                 current_Z = new_Z
                 move_found = true
+                deleteat!(Z_in,argmove)
                 break
             end
 
@@ -179,20 +184,21 @@ function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
         end
         #mouvement out sur Z
         argmove = 1
-        while argmove <= length(Y_in) && move_found == false && sum(current_Z) > 1
+        while argmove <= length(Z_out) && move_found == false && sum(current_Z) > 1
 
-            println("current Y ",current_Y)
-            println("current Z ",current_Z)
+            # println("current Y ",current_Y)
+            # println("current Z ",current_Z)
             new_X_obj1,new_Y_obj1,new_Z = move(I,J,K,C,B,S,current_X,current_Y,current_Z,'z',"out",Z_out[argmove],1)
 
             skl,dominated1 = skiplist_insertion(skl,new_X_obj1,new_Y_obj1,new_Z,objective_value_1(I,J,K,C,B,S,new_X_obj1,new_Y_obj1,new_Z),objective_value_2(I,J,K,C,B,S,new_X_obj1,new_Y_obj1,new_Z))
 
             if dominated1 == false
-                println("mouvement dominant : z_out-",Z_out[argmove])
+                #println("mouvement dominant : z_out-",Z_out[argmove])
                 current_X = new_X_obj1
                 current_Y = new_Y_obj1
                 current_Z = new_Z
                 move_found = true
+                deleteat!(Z_out,argmove)
                 break
             end
 
@@ -201,11 +207,12 @@ function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
             skl,dominated2 = skiplist_insertion(skl,new_X_obj2,new_Y_obj2,new_Z,objective_value_1(I,J,K,C,B,S,new_X_obj2,new_Y_obj2,new_Z),objective_value_2(I,J,K,C,B,S,new_X_obj2,new_Y_obj2,new_Z))
             
             if dominated2 == false
-                println("mouvement dominant : z_out-",Z_out[argmove])
+                #println("mouvement dominant : z_out-",Z_out[argmove])
                 current_X = new_X_obj2
                 current_Y = new_Y_obj2
                 current_Z = new_Z
                 move_found = true
+                deleteat!(Z_out,argmove)
                 break
             end
 
@@ -213,40 +220,43 @@ function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
             argmove += 1
         end
 
-        #si aucun mouvement ne donne une solution non domine, selection d'un mouvement arbitraire.
-        if length(Y_in) > 0
-            current_X,current_Y,current_Z = move(I,J,K,C,B,S,current_X,current_Y,current_Z,'y',"in",Y_in[1],rand(1:2))
-            deleteat!(Y_in,1)
-        elseif length(Y_out) > 0
-            current_X,current_Y,current_Z = move(I,J,K,C,B,S,current_X,current_Y,current_Z,'y',"out",Y_out[1],rand(1:2))
-            deleteat!(Y_out,1)
-        elseif length(Z_in) > 0
-            current_X,current_Y,current_Z = move(I,J,K,C,B,S,current_X,current_Y,current_Z,'z',"in",Z_in[1],rand(1:2))
-            deleteat!(Z_in,1)
-        else
-            current_X,current_Y,current_Z = move(I,J,K,C,B,S,current_X,current_Y,current_Z,'z',"in",Z_out[1],rand(1:2))
-            deleteat!(Z_out,1)
+        if move_found == false
+            #si aucun mouvement ne donne une solution non domine, selection d'un mouvement arbitraire.
+            if length(Y_in) > 0
+                current_X,current_Y,current_Z = move(I,J,K,C,B,S,current_X,current_Y,current_Z,'y',"in",Y_in[1],rand(1:2))
+                deleteat!(Y_in,1)
+            elseif length(Y_out) > 0
+                current_X,current_Y,current_Z = move(I,J,K,C,B,S,current_X,current_Y,current_Z,'y',"out",Y_out[1],rand(1:2))
+                deleteat!(Y_out,1)
+            elseif length(Z_in) > 0
+                current_X,current_Y,current_Z = move(I,J,K,C,B,S,current_X,current_Y,current_Z,'z',"in",Z_in[1],rand(1:2))
+                deleteat!(Z_in,1)
+            else
+                current_X,current_Y,current_Z = move(I,J,K,C,B,S,current_X,current_Y,current_Z,'z',"in",Z_out[1],rand(1:2))
+                deleteat!(Z_out,1)
+            end
+        #println("Pas de solution non dominees, mouvement arbitraire")
         end
-
-        println("Pas de solution non dominees, mouvement arbitraire")
 
         nb_move_left -= 1
     end
 
-    println("Fin ! ")
-    Y1_opened = zeros(Int,J)
-    Y2_opened = zeros(Int,J)
-    for j = 1:J
-        Y1_opened[j] = sum(current_Y[j])
-        Y2_opened[j] = sum(Y2[j])
-    end
+    #println("Fin ! ")
+    # Y1_opened = zeros(Int,J)
+    # Y2_opened = zeros(Int,J)
+    # for j = 1:J
+    #     Y1_opened[j] = sum(current_Y[j])
+    #     Y2_opened[j] = sum(Y2[j])
+    # end
 
-    println("Y1 ",Y1_opened," Z1 ",current_Z)
-    println("Y2 ",Y2_opened," Z2 ",Z2)
-    println("Y_in ",Y_in," Y_out ",Y_out)
-    println("Z_in ",Z_in," Z_out ",Z_out)
+    # println("Y1 ",Y1_opened," Z1 ",current_Z)
+    # println("Y2 ",Y2_opened," Z2 ",Z2)
+    # println("Y_in ",Y_in," Y_out ",Y_out)
+    # println("Z_in ",Z_in," Z_out ",Z_out)
 
-    skl_display(skl)
+    #skl_display(skl)
+
+    return skiplist_solution_vector(skl)
 end
 
 function move(I,J,K,C,B,S,X,Y,Z,y_z,in_out,ind_move,objective)
@@ -281,43 +291,45 @@ function move(I,J,K,C,B,S,X,Y,Z,y_z,in_out,ind_move,objective)
 
 end
 
-I = 5
-J = 4
-K = 3
+#Exemple
 
-B = [
-    [14,13,18],
-    [15,12,14],
-    [10,16,15],
-    [12,14,18]
-]
+# I = 5
+# J = 4
+# K = 3
 
-S = [26,33,30]
+# B = [
+#     [14,13,18],
+#     [15,12,14],
+#     [10,16,15],
+#     [12,14,18]
+# ]
 
-C = [
-    [5,4,7,3],
-    [9,7,6,4],
-    [2,5,3,7],
-    [5,4,8,6],
-    [7,2,3,4]
-]
+# S = [26,33,30]
 
-Z1 = [0,1,0]
-Y1 = [
-    [0,0,0],
-    [0,1,0],
-    [0,1,0],
-    [0,0,0]
-]
-X1 = affectation_terminaux_obj1(5,4,C,Y1)
+# C = [
+#     [5,4,7,3],
+#     [9,7,6,4],
+#     [2,5,3,7],
+#     [5,4,8,6],
+#     [7,2,3,4]
+# ]
 
-Z2 = [0,0,1]
-Y2 = [
-    [0,0,1],
-    [0,0,0],
-    [0,0,0],
-    [0,0,1]
-]
-X2 = affectation_terminaux_obj1(5,4,C,Y2)
+# Z1 = [0,1,0]
+# Y1 = [
+#     [0,0,0],
+#     [0,1,0],
+#     [0,1,0],
+#     [0,0,0]
+# ]
+# X1 = affectation_terminaux_obj1(5,4,C,Y1)
 
-pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
+# Z2 = [0,0,1]
+# Y2 = [
+#     [0,0,1],
+#     [0,0,0],
+#     [0,0,0],
+#     [0,0,1]
+# ]
+# X2 = affectation_terminaux_obj1(5,4,C,Y2)
+
+# pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)

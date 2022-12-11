@@ -1,3 +1,5 @@
+include("Misc.jl")
+
 
 mutable struct skl_element
     previous::Union{skl_element,Nothing}
@@ -137,8 +139,22 @@ function skiplist_insertion(skl_head,X_sol,Y_sol,Z_sol,obj1_sol,obj2_sol)
     return new_skl_head,dominated
 end
 
-function skiplist_solution_vector(skl)
+function skiplist_solution_vector(skl_head)
+    solutions = []
 
+    current = skl_head
+    while current.down != nothing
+        current = current.down
+    end
+
+    current = current.next
+    
+    while current.next != nothing
+        push!(solutions,((current.X,current.Y,current.Z),(current.obj1,current.obj2)))
+        current = current.next
+    end
+
+    return solutions
 end
 
 function skl_display(skl_head::skl_element)
@@ -202,7 +218,7 @@ end
 # X2 = affectation_terminaux_obj2(5,4,C,Y2)
 
 # println("------------------------------------------------------------------------")
-# skl, = skiplist_init()
+# skl = skiplist_init()
 # skl, = skiplist_insertion(skl,nothing,nothing,nothing,3,15)
 # skl, = skiplist_insertion(skl,nothing,nothing,nothing,12,3)
 # skl, = skiplist_insertion(skl,nothing,nothing,nothing,6,9)
@@ -214,3 +230,5 @@ end
 
 
 # skl_display(skl)
+
+# skiplist_solution_vector(skl)

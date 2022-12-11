@@ -239,6 +239,49 @@ function reaffectation_concentrateurs_obj2(J,K,B,S,Y,Z)
 end
 
 
+function verif_sol(I,J,K,X,Y,Z)
+    verif = true
+    Y_opened = zeros(Int,J)
+    for j = 1:J
+        Y_opened[j] = sum(Y[j])
+    end
+
+    for i = 1:I
+        for j = 1:J
+            if X[i][j] == 1 && Y_opened[j] == 0
+                verif = false
+            end
+        end
+    end
+
+    for j = 1:J
+        for k = 1:K
+            if Y[j][k] == 1 && Z[k] == 0
+                verif = false
+            end
+        end
+    end
+    if verif == false
+        println("ALERT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    end
+end
+
+Z = [0,1,1]
+Y = [
+    [0,0,0],
+    [0,0,1],
+    [0,0,1],
+    [0,1,0]
+]
+X = [
+    [0,0,0,1],
+    [0,0,0,1],
+    [0,0,1,0],
+    [0,1,0,0],
+    [0,0,1,0]
+]
+verif_sol(5,4,3,X,Y,Z)
+
 #Exemple 
 #
 # Y = [
