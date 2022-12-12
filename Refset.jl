@@ -103,6 +103,122 @@ function refSet_init(I,J,K,C,B,S,pop,beta,objective)
 
 end
 
+function refSet_insertion(refSet,X_sol,Y_sol,Z_sol,obj_value,beta)
+
+    Y_sol_opened = zeros(Int,J)
+    for j = 1:J
+        Y_sol_opened[j] = sum(Y_sol[j])
+    end
+
+    dist_to_refset = 9999999999
+    argmin = 0
+
+    for r = 1:beta
+
+        dist = 0
+        
+        ((X_refset,Y_refset,Z_refset),) = refSet[r]
+
+        Y_refset_opened = zeros(Int,J)
+        for j = 1:J
+            Y_refset_opened[j] = sum(Y_refset[j])
+        end
+
+        for j = 1:J
+            if Y_sol_opened[j] != Y_refset_opened[j]
+                dist += 1
+            end
+        end
+        
+        for k = 1:K 
+            if Z_sol[k] != Z_refset[k]
+                dist += 1
+            end
+        end
+
+        if dist < dist_to_refset
+            dist_to_refset = dist
+            argmin = r
+        end
+        println("distance au refSet pour ",r," : ",dist)
+    end
+
+    println("min dist = ",dist_to_refset," arg = ",argmin)
+
+    if dist_to_refset == 0
+        return false,refSet
+    else
+        refSet[argmin] = ((X_sol,Y_sol,Z_sol),obj_value)
+        return true,refSet
+    end
+end
+
+function refSet_update(pop,refSet_obj1,refSet_obj2)
+
+
+
+    pop_remain = deepcopy(pop)
+
+    new_refSet_obj1 = deepcopy(refSet_obj1)
+    new_refSet_obj2 = deepcopy(refSet_obj2)
+
+    max_refSet_obj1 = 0
+    max_refSet_obj2 = 0
+
+    for r = 1:beta
+       ((),obj_value_refSet) = new_refSet_obj1[r]
+        if obj_value_refSet > max_refSet_obj1
+            max_refSet_obj1 = obj_value_refSet
+        end
+    end
+
+    for r = 1:beta
+        ((),obj_value_refSet) = new_refSet_obj2[r]
+        if obj_value_refSet > max_refSet_obj2
+            max_refSet_obj2 = obj_value_refSet
+        end
+    end
+
+    display(refSet_obj1)
+    println("refset 1 max : ",max_refSet_obj1)
+
+    #display(refSet_obj2)
+    println("refset 2 max : ",max_refSet_obj2)
+
+    #Tant que des solutions de la populations sont meilleurs qu'au moins une solution du refset
+    while true
+
+        if length(pop_remain) < 1
+            break
+        end
+
+        min = 99999999999
+        argmin = 0
+
+        for r = 1:length(pop_remain)
+            ((),(obj1_value_pop,)) = pop_remain[r]
+            if obj1_value_pop < min
+                min = obj1_value_pop
+                argmin = r
+            end
+
+        end
+
+        println("pop obj1 min = ",min,"argmin : ",argmin)
+
+        if min >= max_refSet_obj1
+            break
+        else
+            ((X,Y,Z),(obj_value,)) = pop_remain[argmin]
+            inserted,refSet_obj1 = refSet_insertion(refSet_obj1,X,Y,Z,obj_value,beta)
+            deleteat!(pop_remain,argmin)
+        end
+    end
+
+    display(refSet_obj1)
+
+end
+
 # #Exemple
 
 # I = 5
