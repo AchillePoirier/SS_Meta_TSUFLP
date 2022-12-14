@@ -1,8 +1,8 @@
 #instance didactique
 
-I = 30 #client
-J = 20 #site lvl 1
-K = 10 #site lvl 2
+I = 20 #client
+J = 10 #site lvl 1
+K = 50 #site lvl 2
 
 inf_distance = 1
 sup_distance = 40

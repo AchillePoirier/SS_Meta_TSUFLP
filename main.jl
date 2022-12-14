@@ -98,13 +98,15 @@ function main()
 
     plot_axe1 = []
     plot_axe2 = []
+    println("Fin ! -------------------------------------------")
 
+    println("Solutions non dominées : ")
     for s in solutions
         ((),(obj1_value,obj2_value)) = s
         push!(plot_axe1,obj1_value)
         push!(plot_axe2,obj2_value)
+        println("(",obj1_value,",",obj2_value,")")
     end
-    println(solutions)
 
     scatter(plot_axe1,plot_axe2)
 
