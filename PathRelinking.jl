@@ -1,7 +1,7 @@
 include("Misc.jl")
 include("Skiplist.jl")
 
-function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
+function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2,Ctr)
 
     #X1,Y1,Z1 : solution de depart
     #X2,Y2,Z2 : solution d'arrivee
@@ -77,7 +77,7 @@ function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
 
         #mouvement in sur y
         argmove = 1
-        while argmove <= length(Y_in) && move_found == false 
+        while argmove <= length(Y_in) && move_found == false && sum(Y1_opened) <= Ctr
 
             new_X_obj1,new_Y_obj1,new_Z = move(I,J,K,C,B,S,current_X,current_Y,current_Z,'y',"in",Y_in[argmove],1)
 
@@ -222,7 +222,7 @@ function pathRelinking(I,J,K,C,B,S,X1,Y1,Z1,X2,Y2,Z2)
 
         if move_found == false
             #si aucun mouvement ne donne une solution non domine, selection d'un mouvement arbitraire.
-            if length(Y_in) > 0
+            if length(Y_in) > 0 && sum(Y1_opened) <= Ctr
                 current_X,current_Y,current_Z = move(I,J,K,C,B,S,current_X,current_Y,current_Z,'y',"in",Y_in[1],rand(1:2))
                 deleteat!(Y_in,1)
             elseif length(Y_out) > 0

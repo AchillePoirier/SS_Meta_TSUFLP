@@ -103,15 +103,28 @@ function refSet_init(I,J,K,C,B,S,pop,beta,objective)
 
 end
 
-function refSet_insertion(refSet,X_sol,Y_sol,Z_sol,obj_value,beta)
-
+function refSet_insertion(refSet,J,K,X_sol,Y_sol,Z_sol,obj_value,beta)
     Y_sol_opened = zeros(Int,J)
     for j = 1:J
         Y_sol_opened[j] = sum(Y_sol[j])
     end
 
-    dist_to_refset = 9999999999
-    argmin = 0
+    #indice des solution du refset qui sont moins bonne que la solution que l on souhaite inserer
+    arg_worst_sol = Vector{Int}(undef,0)
+
+    for r = 1:beta
+        ((),obj_value_refset) = refSet[r]
+        if obj_value_refset > obj_value
+            push!(arg_worst_sol,r)
+        end
+    end
+
+    if length(arg_worst_sol) == 0
+        return false,refSet
+    end
+
+    distances = zeros(Int,beta)
+    distance_nul = false
 
     for r = 1:beta
 
@@ -136,26 +149,37 @@ function refSet_insertion(refSet,X_sol,Y_sol,Z_sol,obj_value,beta)
             end
         end
 
-        if dist < dist_to_refset
-            dist_to_refset = dist
-            argmin = r
+        distances[r] = dist
+        if dist == 0
+            distance_nul = true
         end
-        println("distance au refSet pour ",r," : ",dist)
+        #println("distance au refSet pour ",r," : ",dist)
     end
 
-    println("min dist = ",dist_to_refset," arg = ",argmin)
+    #println("min dist = ",dist_to_refset," arg = ",argmin)
 
-    if dist_to_refset == 0
+    #si la solution est deja dans le refset, on ne l'insere pas
+    if distance_nul == true
         return false,refSet
     else
+        #on retire la solution la moins distante parmi celles qui sont moins bonnes.
+        min = 999999999
+        argmin = 0
+        for r in arg_worst_sol
+            if distances[r] < min
+                min = distances[r]
+                argmin = r
+            end
+        end
+
         refSet[argmin] = ((X_sol,Y_sol,Z_sol),obj_value)
         return true,refSet
     end
 end
 
-function refSet_update(pop,refSet_obj1,refSet_obj2)
+function refSet_update(pop,refSet_obj1,refSet_obj2,J,K,beta)
 
-
+    sol_added = false
 
     pop_remain = deepcopy(pop)
 
@@ -179,16 +203,16 @@ function refSet_update(pop,refSet_obj1,refSet_obj2)
         end
     end
 
-    display(refSet_obj1)
-    println("refset 1 max : ",max_refSet_obj1)
+    # display(refSet_obj1)
+    # println("refset 1 max : ",max_refSet_obj1)
 
-    #display(refSet_obj2)
-    println("refset 2 max : ",max_refSet_obj2)
+    # display(refSet_obj2)
+    # println("refset 2 max : ",max_refSet_obj2)
 
     #Tant que des solutions de la populations sont meilleurs qu'au moins une solution du refset
     while true
 
-        if length(pop_remain) < 1
+        if length(pop_remain) < 1 
             break
         end
 
@@ -204,18 +228,58 @@ function refSet_update(pop,refSet_obj1,refSet_obj2)
 
         end
 
-        println("pop obj1 min = ",min,"argmin : ",argmin)
+        #println("pop obj1 min = ",min,"argmin : ",argmin)
 
         if min >= max_refSet_obj1
             break
         else
             ((X,Y,Z),(obj_value,)) = pop_remain[argmin]
-            inserted,refSet_obj1 = refSet_insertion(refSet_obj1,X,Y,Z,obj_value,beta)
+            inserted,refSet_obj1 = refSet_insertion(refSet_obj1,J,K,X,Y,Z,obj_value,beta)
+            if inserted == true
+                sol_added = true
+            end
             deleteat!(pop_remain,argmin)
         end
     end
 
-    display(refSet_obj1)
+    pop_remain = deepcopy(pop)
+
+
+
+    while true
+
+        if length(pop_remain) < 1 
+            break
+        end
+
+        min = 99999999999
+        argmin = 0
+
+        for r = 1:length(pop_remain)
+            ((),(obj2_value_pop,)) = pop_remain[r]
+            if obj2_value_pop < min
+                min = obj2_value_pop
+                argmin = r
+            end
+
+        end
+
+        #println("pop obj1 min = ",min,"argmin : ",argmin)
+
+        if min >= max_refSet_obj2
+            break
+        else
+            ((X,Y,Z),(obj_value,)) = pop_remain[argmin]
+            inserted,refSet_obj2 = refSet_insertion(refSet_obj2,J,K,X,Y,Z,obj_value,beta)
+            if inserted == true
+                sol_added = true
+            end
+            deleteat!(pop_remain,argmin)
+        end
+
+    end
+
+    return sol_added,refSet_obj1,refSet_obj2
 
 end
 

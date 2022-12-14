@@ -1,14 +1,14 @@
 #instance didactique
 
-I = 5 #client
-J = 4 #site lvl 1
-K = 3 #site lvl 2
+I = 30 #client
+J = 20 #site lvl 1
+K = 10 #site lvl 2
 
 inf_distance = 1
-sup_distance = 
+sup_distance = 40
 
-inf_instal_nv1 = 30
-sup_instal_nv1 = 100
+inf_instal_nv1 = 50
+sup_instal_nv1 = 200
 
 inf_instal_nv2 = 400
 sup_instal_nv2 = 600

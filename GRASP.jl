@@ -199,7 +199,7 @@ function RCL_init_Y_obj2(J,K,B,Z,alpha)
 end
 
 
-function population_generation(I,J,K,C,B,S,P,alpha)
+function population_generation(I,J,K,C,B,S,P,alpha,Ctr)
 
     pop_obj1 = []
     pop_obj2 = []
@@ -207,6 +207,8 @@ function population_generation(I,J,K,C,B,S,P,alpha)
 
     #plus ou moins 1
     half_P = floor(P/2) 
+
+    println(half_P)
 
     RCL_Z_obj1 = RCL_init_Z_obj1(K,S,alpha)
     RCL_Z_obj2 = RCL_init_Z_obj2(K,S,alpha)
@@ -244,7 +246,9 @@ function population_generation(I,J,K,C,B,S,P,alpha)
             RCL_Y = RCL_init_Y_obj2(J,K,B,Z,alpha)
         end
 
-        nb_Y_open = rand(1:length(RCL_Y))
+        borne_nb_Y_open = min(Ctr,length(RCL_Y))
+
+        nb_Y_open = rand(1:borne_nb_Y_open)
         # println("RCL Y : ",RCL_Y)
         # println("rnd : ",nb_Y_open)
         Y = Vector{Vector{Int}}(undef,J)
